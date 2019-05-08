@@ -3,7 +3,6 @@ import Bukdu.Actions: index, show, new, edit, create, delete, update
 using Octo.Adapters.PostgreSQL
 using JSON2
 
-include("LibPQEx.jl")
 include("GeoJSON.jl")
 # using .GeoJSON
 include("OctoEx.jl")

@@ -1,15 +1,31 @@
-using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, PQValue
+using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, PQValue, Connection, execute, fetch!
 using GeoInterface
 using LibGEOS
 using GeoJSON
 using JSON2
 
-PQ_SYSTEM_TYPES[:geometry] = 16392
-LIBPQ_TYPE_MAP[:geometry] = AbstractGeometry
+# result = execute(conn, "select oid from pg_type where typname='geometry'")
+# data = fetch!(NamedTuple, result)
+# oid = data.oid[1]
+# PQ_SYSTEM_TYPES[:geometry] = oid #16392
+# LIBPQ_TYPE_MAP[:geometry] = AbstractGeometry
+#
+# function Base.parse(::Type{AbstractGeometry}, pqv::PQValue{PQ_SYSTEM_TYPES[:geometry]})
+#     hexwkb = LibPQ.string_view(pqv)
+#     return readwkb(hexwkb)
+# end
 
-function Base.parse(::Type{AbstractGeometry}, pqv::PQValue{PQ_SYSTEM_TYPES[:geometry]})
-    hexwkb = LibPQ.string_view(pqv)
-    return readwkb(hexwkb)
+function register_type(conn::Connection, typname::Symbol, type)
+    result = execute(conn, "select oid from pg_type where typname='$typname'")
+    data = fetch!(NamedTuple, result)
+    oid = data.oid[1]
+    PQ_SYSTEM_TYPES[typname] = oid
+    LIBPQ_TYPE_MAP[typname] = type
+    func = """function Base.parse(::Type{$type}, pqv::PQValue{PQ_SYSTEM_TYPES[:$typname]})
+        hexwkb = LibPQ.string_view(pqv)
+        return readwkb(hexwkb)
+    end"""
+    Meta.parse(func) |> eval
 end
 
 JSON2.write(io::IO, obj::T; kwargs...) where {T <: AbstractGeometry} = begin
