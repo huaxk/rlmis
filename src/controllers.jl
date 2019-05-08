@@ -3,6 +3,7 @@ import Bukdu.Actions: index, show, new, edit, create, delete, update
 using Octo.Adapters.PostgreSQL
 using JSON2
 
+include("LibPQEx.jl")
 include("GeoJSON.jl")
 # using .GeoJSON
 include("OctoEx.jl")
@@ -73,10 +74,13 @@ struct HereController <: ApplicationController
 end
 
 function index(c::HereController)
-    q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
-    hs = Repo.query(q, geometrytransforms)
-    # render(JSON, GeoJSON.to_features(hs, :lnglat))
-    render(JSON, GeoJSON.to_featurecollection(hs, :lnglat))
+    # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
+    # hs = Repo.query(q, geometrytransforms)
+    # # render(JSON, GeoJSON.to_features(hs, :lnglat))
+    # render(JSON, GeoJSON.to_featurecollection(hs, :lnglat))
+    q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres]
+    hs = Repo.query(q)
+    render(JSON, hs)
 end
 
 function show(c::HereController)
