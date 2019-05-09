@@ -2,9 +2,13 @@ using Bukdu
 import Bukdu.Actions: index, show, new, edit, create, delete, update
 using Octo.Adapters.PostgreSQL
 using JSON2
+using LibGEOS
+using LibGEOS: WKBWriter
+using GeoJSON
 
+include("LibGEOSEx.jl")
+using .LibGEOSEx
 include("GeoJSON.jl")
-# using .GeoJSON
 include("OctoEx.jl")
 include("models.jl")
 
@@ -66,7 +70,7 @@ function create(c::RoleController)
 end
 
 # ==================================s
-geometrytransforms = Dict(3=>g->JSON2.read(g, GeoJSON.GeometryTuple))
+# geometrytransforms = Dict(3=>g->JSON2.read(g, GeoJSON.GeometryTuple))
 
 struct HereController <: ApplicationController
     conn::Conn
@@ -75,25 +79,39 @@ end
 function index(c::HereController)
     # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
     # hs = Repo.query(q, geometrytransforms)
-    # # render(JSON, GeoJSON.to_features(hs, :lnglat))
-    # render(JSON, GeoJSON.to_featurecollection(hs, :lnglat))
     q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres]
     hs = Repo.query(q)
     render(JSON, hs)
+    # render(JSON, to_features(hs, :lnglat))
+    # render(JSON, to_featurecollection(hs, :lnglat))
 end
 
 function show(c::HereController)
     id = c.params.id
-    q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres WHERE heres.id==id]
-    # h = Repo.query(q, geometrytransforms)
-    # render(JSON, GeoJSON.to_feature(h[1], :lnglat))
-    render(JSON, Repo.query(q, geometrytransforms))
+    # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres WHERE heres.id==id]
+    q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres WHERE heres.id==id]
+    h = Repo.query(q)
+    # render(JSON, to_feature(h[1], :lnglat))
+    render(JSON, h[1])
+    # render(JSON, Repo.query(q, geometrytransforms))
 end
 
+"""
+{
+    "name": "testone",
+    "lnglat": {"coordinates":[66,45.32],"type":"Point"}
+}
+"""
 function create(c::HereController)
-    h = c.params.json
-    @show h
-    Repo.execute([INSERT INTO heres VALUES (h.name, "SRID=4326;POINT(12 34)")])
+    geojson = c.params.json
+    @show geojson
+    # Repo.execute([INSERT INTO heres VALUES (h.name, "SRID=4326;POINT(12 34)")])
+    p = LibGEOS.Point(10, 20)
+    # p1 = GeoJSON.parse(geojson)
+    # @show p1
+    # p = LibGEOS.Point(dict2geo(geojson))
+    lnglat = writewkb(p, 4326, hex=true)
+    Repo.insert!(Here, [(name="good", lnglat=lnglat)])
 end
 
 # ==================================
