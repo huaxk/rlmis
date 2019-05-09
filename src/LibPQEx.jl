@@ -1,48 +1,41 @@
 module LibPQEx
 
 using LibPQ
-using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, PQValue, Connection, execute, fetch!
-using GeoInterface
-using GeoJSON
-using JSON2
+using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, Oid, 
 
 include("LibGEOSEx.jl")
 using .LibGEOSEx
 
-export register_type
+export getTypeOid, registerType
 
-# result = execute(conn, "select oid from pg_type where typname='geometry'")
-# data = fetch!(NamedTuple, result)
-# oid = data.oid[1]
-# PQ_SYSTEM_TYPES[:geometry] = oid #16392
-# LIBPQ_TYPE_MAP[:geometry] = AbstractGeometry
-#
-# function Base.parse(::Type{AbstractGeometry}, pqv::PQValue{PQ_SYSTEM_TYPES[:geometry]})
-#     hexwkb = LibPQ.string_view(pqv)
-#     return readwkb(hexwkb)
-# end
-
-function register_type(conn::Connection, typname::Symbol, type)
+function getTypeOid(conn::Connection, typname::String)
     result = execute(conn, "select oid from pg_type where typname='$typname'")
     data = fetch!(NamedTuple, result)
     oid = data.oid[1]
+    Symbol(typname), oid
+end
+
+function registerType(typname::Symbol, oid::Oid, type::Type)
     PQ_SYSTEM_TYPES[typname] = oid
     LIBPQ_TYPE_MAP[typname] = type
-    func_def = """function Base.parse(::Type{$type}, pqv::PQValue{PQ_SYSTEM_TYPES[:$typname]})
-        hexwkb = LibPQ.string_view(pqv)
-        return readwkb(hexwkb, hex=true)
-    end"""
-    Meta.parse(func_def) |> eval
-
-    # @eval function Base.parse(::Type{$type}, pqv::PQValue{PQ_SYSTEM_TYPES[:($typname)]})
-    #         hexwkb = LibPQ.string_view(pqv)
-    #         return readwkb(hexwkb)
-    #     end
+    nothing
 end
 
-JSON2.write(io::IO, obj::T; kwargs...) where {T <: AbstractGeometry} = begin
-    JSON2.write(io, geo2dict(obj); kwargs...)
-end
-
+# function register_type(conn::Connection, typname::Symbol, type)
+#     result = execute(conn, "select oid from pg_type where typname='$typname'")
+#     data = fetch!(NamedTuple, result)
+#     oid = data.oid[1]
+#     PQ_SYSTEM_TYPES[typname] = oid
+#     LIBPQ_TYPE_MAP[typname] = type
+#     parse_func = """function Base.parse(::Type{$type}, pqv::PQValue{PQ_SYSTEM_TYPES[:$typname]})
+#         hexwkb = LibPQ.string_view(pqv)
+#         return readwkb(hexwkb, hex=true)
+#     end"""
+#     Meta.parse(parse_func) |> eval
+#     # @eval function Base.parse(::Type{$type}, pqv::PQValue{PQ_SYSTEM_TYPES[:($typname)]})
+#     #         hexwkb = LibPQ.string_view(pqv)
+#     #         return readwkb(hexwkb)
+#     #     end
+# end
 
 end  # module LibPQEx

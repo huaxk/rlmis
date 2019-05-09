@@ -1,5 +1,6 @@
 using Octo.Adapters.PostgreSQL
-using GeoInterface
+using LibPQ: PQValue
+using GeoInterface: AbstractGeometry
 
 include("LibPQEx.jl")
 using .LibPQEx
@@ -9,4 +10,12 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
                     dbname="gis",
                     user="gis",
                     password="gispass")
-register_type(conn, :geometry, AbstractGeometry)
+
+# register geometry type
+type, oid = getTypeOid(conn, "geometry")
+registerType(type, oid, AbstractGeometry)
+
+function Base.parse(::Type{AbstractGeometry}, pqv::PQValue{:($oid)})
+    hexwkb = LibPQ.string_view(pqv)
+    readwkb(hexwkb, hex=true)
+end

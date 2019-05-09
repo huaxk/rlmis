@@ -103,15 +103,26 @@ end
 }
 """
 function create(c::HereController)
-    geojson = c.params.json
-    @show geojson
-    # Repo.execute([INSERT INTO heres VALUES (h.name, "SRID=4326;POINT(12 34)")])
-    p = LibGEOS.Point(10, 20)
-    # p1 = GeoJSON.parse(geojson)
-    # @show p1
-    # p = LibGEOS.Point(dict2geo(geojson))
-    lnglat = writewkb(p, 4326, hex=true)
-    Repo.insert!(Here, [(name="good", lnglat=lnglat)])
+    json = c.params.json
+    @show json
+    # p = LibGEOS.Point(tuple2geo(json.lnglat))
+    # lnglat = writewkb(p, 4326, hex=true)
+    # Repo.insert!(Here, [(name=json.name, lnglat=lnglat)])
+    name = json.name
+    lnglat = JSON2.write(json.lnglat)
+    Repo.execute(Raw("""
+        insert into heres (name, lnglat)
+        values(
+            '$name',
+            ST_SetSRID(ST_GeomFromGeoJSON('$lnglat'), 4326)
+        )
+        """))
+    # Repo.execute(Raw("""
+    #     PREPARE insert_here(text, text) as
+    #     insert into heres (name, lnglat) values(\$1, ST_SetSRID(ST_GeomFromGeoJSON(\$2), 4326));
+    #     EXECUTE insert_here('$name', '$lnglat');
+    #     """))
+    # Repo.execute([INSERT INTO heres (heres.name, heres.lnglat) VALUES ("ok", ST_GeomFromEWKT("SRID=4326;POINT(12 34)"))])
 end
 
 # ==================================

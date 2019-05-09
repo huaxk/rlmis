@@ -49,7 +49,8 @@ end
 
 @sql_functions(ST_AsText,
                ST_AsGeoJSON,
-               ST_GeomFromEWKT)
+               ST_GeomFromEWKT,
+               ST_GeomFromGeoJSON)
 
 
 # end  # module OtcoEx
