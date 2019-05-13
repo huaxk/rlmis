@@ -1,10 +1,7 @@
 module LibPQEx
 
 using LibPQ
-using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, Oid, 
-
-include("LibGEOSEx.jl")
-using .LibGEOSEx
+using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, Oid, Connection
 
 export getTypeOid, registerType
 

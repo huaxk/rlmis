@@ -35,6 +35,12 @@ git-tree-sha1 = "13a6d15102410d8e70146533b759fc48d844a1d0"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.22.3"
 
+[[GeoInterface]]
+deps = ["RecipesBase", "Test"]
+git-tree-sha1 = "0c0c0bf9c79b10e48aa089e78ac504ebc43db3a0"
+uuid = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+version = "0.4.1"
+
 [[HTTP]]
 deps = ["Base64", "Dates", "Distributed", "IniFile", "MbedTLS", "Random", "Sockets", "Test"]
 git-tree-sha1 = "25db0e3f27bd5715814ca7e4ad22025fdcf5cc6e"
@@ -63,6 +69,12 @@ git-tree-sha1 = "36180793e9b043af9d07966482eb3a16f903649f"
 uuid = "2535ab7d-5cd8-5a07-80ac-9b1792aadce3"
 version = "0.3.0"
 
+[[LibGEOS]]
+deps = ["BinaryProvider", "GeoInterface", "Libdl", "Test"]
+path = "C:\\Users\\hxk\\.julia\\dev\\LibGEOS"
+uuid = "a90b1aa1-3769-5649-ba7e-abc5a9d163eb"
+version = "0.4.1+"
+
 [[LibGit2]]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 
@@ -87,11 +99,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Octo]]
 deps = ["Dates"]
-git-tree-sha1 = "860aea3d442c4b6f29d153282628672100697c69"
-repo-rev = "master"
-repo-url = "https://github.com/wookay/Octo.jl.git"
+git-tree-sha1 = "76a4c2fb926b85268de9ac4290f1413d71006101"
 uuid = "16905944-f982-529b-abb2-b839f98f160b"
-version = "0.2.3-DEV"
+version = "0.2.2"
 
 [[Parsers]]
 deps = ["Dates", "Test"]
@@ -114,6 +124,12 @@ uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 [[Random]]
 deps = ["Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+
+[[RecipesBase]]
+deps = ["Random", "Test"]
+git-tree-sha1 = "0b3cb370ee4dc00f47f1193101600949f3dcf884"
+uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+version = "0.6.0"
 
 [[SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"

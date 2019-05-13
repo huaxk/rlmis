@@ -1,6 +1,7 @@
 using Octo.Adapters.PostgreSQL
 using LibPQ: PQValue
 using GeoInterface: AbstractGeometry
+using LibGEOS
 
 include("LibPQEx.jl")
 using .LibPQEx

@@ -3,11 +3,8 @@ import Bukdu.Actions: index, show, new, edit, create, delete, update
 using Octo.Adapters.PostgreSQL
 using JSON2
 using LibGEOS
-using LibGEOS: WKBWriter
 using GeoJSON
 
-include("LibGEOSEx.jl")
-using .LibGEOSEx
 include("GeoJSON.jl")
 include("OctoEx.jl")
 include("models.jl")
