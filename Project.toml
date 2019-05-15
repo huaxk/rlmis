@@ -6,4 +6,6 @@ version = "0.1.0"
 [deps]
 Bukdu = "3e78a19a-cc83-51d8-955b-515f39fd7955"
 LibGEOS = "a90b1aa1-3769-5649-ba7e-abc5a9d163eb"
+LibPQ = "194296ae-ab2e-5f79-8cd4-7183a0a5a0d1"
 Octo = "16905944-f982-529b-abb2-b839f98f160b"
+Tables = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"

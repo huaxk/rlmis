@@ -1,20 +1,21 @@
 module LibPQEx
 
 using LibPQ
-using LibPQ: PQ_SYSTEM_TYPES, LIBPQ_TYPE_MAP, Oid, Connection
+using Tables
 
 export getTypeOid, registerType
 
-function getTypeOid(conn::Connection, typname::String)
-    result = execute(conn, "select oid from pg_type where typname='$typname'")
-    data = fetch!(NamedTuple, result)
+function getTypeOid(conn::LibPQ.Connection, typname::String)
+    result = LibPQ.execute(conn, "select oid from pg_type where typname='$typname'")
+    data = Tables.columntable(result)
+    LibPQ.close(result)
     oid = data.oid[1]
     Symbol(typname), oid
 end
 
-function registerType(typname::Symbol, oid::Oid, type::Type)
-    PQ_SYSTEM_TYPES[typname] = oid
-    LIBPQ_TYPE_MAP[typname] = type
+function registerType(typname::Symbol, oid::LibPQ.Oid, type::Type)
+    LibPQ.PQ_SYSTEM_TYPES[typname] = oid
+    LibPQ.LIBPQ_TYPE_MAP[typname] = type
     nothing
 end
 
