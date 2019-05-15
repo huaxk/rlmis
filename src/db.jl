@@ -12,11 +12,9 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
                     user="gis",
                     password="gispass")
 
-# register geometry type
-type, oid = getTypeOid(conn, "geometry")
-registerType(type, oid, AbstractGeometry)
+func = (pqv::PQValue) -> (hexwkb = LibPQ.string_view(pqv); readwkb(hexwkb, hex=true))
 
-function Base.parse(::Type{AbstractGeometry}, pqv::PQValue{:($oid)})
-    hexwkb = LibPQ.string_view(pqv)
-    readwkb(hexwkb, hex=true)
-end
+LibPQEx.register(conn,
+                :geometry,
+                AbstractGeometry,
+                func)
