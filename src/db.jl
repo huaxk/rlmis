@@ -12,9 +12,11 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
                     user="gis",
                     password="gispass")
 
-func = (pqv::PQValue) -> (hexwkb = LibPQ.string_view(pqv); readwkb(hexwkb, hex=true))
+funcfrom = (pqv::PQValue) -> (hexwkb = LibPQ.string_view(pqv); readwkb(hexwkb, hex=true))
+functo = (geo::AbstractGeometry) -> writewkb(geo, 4326, hex=true)
 
 LibPQEx.register(conn,
                 :geometry,
                 AbstractGeometry,
-                func)
+                funcfrom,
+                functo)

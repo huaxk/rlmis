@@ -15,6 +15,12 @@ git-tree-sha1 = "195670bdfeede359b2f451da29dd698f322d28a6"
 uuid = "3e78a19a-cc83-51d8-955b-515f39fd7955"
 version = "0.4.3"
 
+[[CEnum]]
+deps = ["Test"]
+git-tree-sha1 = "68ec26437107fabd8bf4a420e0f9c38ce0e71978"
+uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
+version = "0.1.1"
+
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
 git-tree-sha1 = "84aa74986c5b9b898b0d1acaf3258741ee64754f"
@@ -108,8 +114,13 @@ uuid = "6f188dcb-512c-564b-bc01-e0f76e72f166"
 version = "1.0.0"
 
 [[LibGEOS]]
+<<<<<<< HEAD
 deps = ["BinaryProvider", "GeoInterface", "Libdl", "Test"]
 path = "C:/sources/dev/LibGEOS"
+=======
+deps = ["BinaryProvider", "CEnum", "GeoInterface", "Libdl", "Test"]
+path = "D:/sources/dev/LibGEOS"
+>>>>>>> 5f6fdf2f6e56113f003c456df3e6f7ba22b21dc8
 uuid = "a90b1aa1-3769-5649-ba7e-abc5a9d163eb"
 version = "0.4.1+"
 
@@ -118,7 +129,11 @@ uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 
 [[LibPQ]]
 deps = ["BinaryProvider", "Dates", "Decimals", "DocStringExtensions", "IterTools", "LayerDicts", "Libdl", "Memento", "OffsetArrays", "Tables", "TimeZones"]
+<<<<<<< HEAD
 path = "C:/sources/dev/LibPQ"
+=======
+path = "D:/sources/dev/LibPQ"
+>>>>>>> 5f6fdf2f6e56113f003c456df3e6f7ba22b21dc8
 uuid = "194296ae-ab2e-5f79-8cd4-7183a0a5a0d1"
 version = "0.9.1"
 
