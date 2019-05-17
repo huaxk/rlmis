@@ -1,10 +1,7 @@
 using Octo.Adapters.PostgreSQL
-using LibPQ: PQValue
 using GeoInterface: AbstractGeometry
+using LibPQ
 using LibGEOS
-
-include("LibPQEx.jl")
-using .LibPQEx
 
 Repo.debug_sql()
 conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
@@ -12,11 +9,7 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
                     user="gis",
                     password="gispass")
 
-funcfrom = (pqv::PQValue) -> (hexwkb = LibPQ.string_view(pqv); readwkb(hexwkb, hex=true))
+funcfrom = (pqv::LibPQ.PQValue) -> readwkb(LibPQ.string_view(pqv), hex=true)
 functo = (geo::AbstractGeometry) -> writewkb(geo, 4326, hex=true)
 
-LibPQEx.register(conn,
-                :geometry,
-                AbstractGeometry,
-                funcfrom,
-                functo)
+LibPQ.register(conn, :geometry, AbstractGeometry, funcfrom, functo)
