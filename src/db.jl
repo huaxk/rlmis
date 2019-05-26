@@ -9,7 +9,7 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
                     user="gis",
                     password="gispass")
 
-funcfrom = (pqv::LibPQ.PQValue) -> readwkb(LibPQ.string_view(pqv), hex=true)
-functo = (geo::AbstractGeometry) -> writewkb(geo, 4326, hex=true)
+funcfrom(pqv::LibPQ.PQValue) = readwkb(LibPQ.string_view(pqv), hex=true)
+functo(geo::AbstractGeometry) = writewkb(geo, hex=true)
 
-LibPQ.register(conn, :geometry, AbstractGeometry, funcfrom, functo)
+register(conn, :geometry, AbstractGeometry, funcfrom, functo)
