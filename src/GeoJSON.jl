@@ -2,40 +2,47 @@ using JSON2
 using GeoInterface
 using GeoInterface: AbstractGeometry
 using GeoJSON
+using LibGEOS
 
 GeometryTuple = NamedTuple
 
 """
-    (type="Point", coordinates=[12, 45])
+    (type="Point", coordinates=[12.0, 45.0])
 """
 function tuple2geo(tp::NamedTuple)
     t = Symbol(tp.type)
-    convert(Val(t), tp)
+    # convert(Val(t), tp)
+    type = @eval LibGEOS.$t
+    convert(type, tp)
 end
 
-Base.convert(::Val{:Point}, tp::NamedTuple) = GeoInterface.Point(tp.coordinates)
-Base.convert(::Val{:MultiPoint}, tp::NamedTuple) = GeoInterface.MultiPoint(tp.coordinates)
-Base.convert(::Val{:LineString}, tp::NamedTuple) = GeoInterface.LineString(tp.coordinates)
-Base.convert(::Val{:MultiLineString}, tp::NamedTuple) = GeoInterface.MultiLineString(tp.coordinates)
-Base.convert(::Val{:Polygon}, tp::NamedTuple) = GeoInterface.Polygon(tp.coordinates)
-Base.convert(::Val{:MultiPolygon}, tp::NamedTuple) = GeoInterface.MultiPolygon(tp.coordinates)
-Base.convert(::Val{:GeometryCollection}, tp::NamedTuple) = GeoInterface.GeometryCollection(tuple2geo.(tp.geometries))
-Base.convert(::Val{:Feature}, tp::NamedTuple) = begin
-    feature = GeoInterface.Feature(tuple2geo(tp.geometry), tp.properties)
-    ks = keys(tp)
-    :id in ks && (feature.properties["featureid"] = tp.id)
-    :bbox in ks && (feature.properties["bbox"] = GeoInterface.BBox(tp.bbox))
-    :crs in ks && (feature.properties["crs"] = tp.crs)
-    feature
+for geom in (:Point, :MultiPoint, :LineString, :MultiLineString, :Polygon, :MultiPolygon)
+    @eval Base.convert(::Type{LibGEOS.$geom}, tp::NamedTuple) = LibGEOS.$geom(tp.coordinates)
 end
-Base.convert(::Val{:FeatureCollectionz}, tp::NamedTuple) = begin
-    features = GeoInterface.Feature[tuple2geo.(tp.features)...]
-    featurecollection = GeoInterface.FeatureCollection(features)
-    ks = keys(tp)
-    :bbox in ks && (featurecollection.bbox = GeoInterface.BBox(tp.bbox))
-    :crs in ks && (featurecollection.crs = tp.crs)
-    featurecollection
-end
+
+# Base.convert(::Val{:Point}, tp::NamedTuple) = GeoInterface.Point(tp.coordinates)
+# Base.convert(::Val{:MultiPoint}, tp::NamedTuple) = GeoInterface.MultiPoint(tp.coordinates)
+# Base.convert(::Val{:LineString}, tp::NamedTuple) = GeoInterface.LineString(tp.coordinates)
+# Base.convert(::Val{:MultiLineString}, tp::NamedTuple) = GeoInterface.MultiLineString(tp.coordinates)
+# Base.convert(::Val{:Polygon}, tp::NamedTuple) = GeoInterface.Polygon(tp.coordinates)
+# Base.convert(::Val{:MultiPolygon}, tp::NamedTuple) = GeoInterface.MultiPolygon(tp.coordinates)
+# Base.convert(::Val{:GeometryCollection}, tp::NamedTuple) = GeoInterface.GeometryCollection(tuple2geo.(tp.geometries))
+# Base.convert(::Val{:Feature}, tp::NamedTuple) = begin
+#     feature = GeoInterface.Feature(tuple2geo(tp.geometry), tp.properties)
+#     ks = keys(tp)
+#     :id in ks && (feature.properties["featureid"] = tp.id)
+#     :bbox in ks && (feature.properties["bbox"] = GeoInterface.BBox(tp.bbox))
+#     :crs in ks && (feature.properties["crs"] = tp.crs)
+#     feature
+# end
+# Base.convert(::Val{:FeatureCollection}, tp::NamedTuple) = begin
+#     features = GeoInterface.Feature[tuple2geo.(tp.features)...]
+#     featurecollection = GeoInterface.FeatureCollection(features)
+#     ks = keys(tp)
+#     :bbox in ks && (featurecollection.bbox = GeoInterface.BBox(tp.bbox))
+#     :crs in ks && (featurecollection.crs = tp.crs)
+#     featurecollection
+# end
 
 JSON2.write(io::IO, obj::T; kwargs...) where {T <: AbstractGeometry} = begin
     JSON2.write(io, GeoJSON.geo2dict(obj); kwargs...)
