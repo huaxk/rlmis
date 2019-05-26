@@ -66,16 +66,14 @@ function create(c::RoleController)
     render(JSON, role)
 end
 
-# ==================================s
-# geometrytransforms = Dict(3=>g->JSON2.read(g, GeoJSON.GeometryTuple))
-
+# ==================================
 struct HereController <: ApplicationController
     conn::Conn
 end
 
 function index(c::HereController)
     # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
-    # hs = Repo.query(q, geometrytransforms)
+    # hs = Repo.query(q)
     q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres]
     hs = Repo.query(q)
     render(JSON, hs)
@@ -103,7 +101,8 @@ function create(c::HereController)
     json = c.params.json
     @show json
     # p = LibGEOS.Point(tuple2geo(json.lnglat))
-    p = LibGEOS.Point(2, 3)
+    # p = LibGEOS.Point(2, 3)
+    p = tuple2geo(json.lnglat)
     lnglat = writewkb(p, 4326, hex=true)
     Repo.insert!(Here, [(name="testtwo", lnglat=p)])
 
