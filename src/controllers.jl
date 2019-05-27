@@ -4,6 +4,7 @@ using Octo.Adapters.PostgreSQL
 using JSON2
 using LibGEOS
 using GeoJSON
+using HTTP.Messages: setheader
 
 include("GeoJSON.jl")
 include("OctoEx.jl")
@@ -83,12 +84,10 @@ end
 
 function show(c::HereController)
     id = c.params.id
-    # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres WHERE heres.id==id]
     q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres WHERE heres.id==id]
     h = Repo.query(q)
     # render(JSON, to_feature(h[1], :lnglat))
     render(JSON, h[1])
-    # render(JSON, Repo.query(q, geometrytransforms))
 end
 
 """
@@ -99,13 +98,9 @@ end
 """
 function create(c::HereController)
     json = c.params.json
-    @show json
-    # p = LibGEOS.Point(tuple2geo(json.lnglat))
-    # p = LibGEOS.Point(2, 3)
     p = tuple2geo(json.lnglat)
-    lnglat = writewkb(p, 4326, hex=true)
+    setSRID(p, 4326)
     Repo.insert!(Here, [(name="testtwo", lnglat=p)])
-
     # name = json.name
     # lnglat = JSON2.write(json.lnglat)
     # Repo.execute(Raw("""
@@ -115,13 +110,6 @@ function create(c::HereController)
     #         ST_SetSRID(ST_GeomFromGeoJSON('$lnglat'), 4326)
     #     )
     #     """))
-
-    # Repo.execute(Raw("""
-    #     PREPARE insert_here(text, text) as
-    #     insert into heres (name, lnglat) values(\$1, ST_SetSRID(ST_GeomFromGeoJSON(\$2), 4326));
-    #     EXECUTE insert_here('$name', '$lnglat');
-    #     """))
-    # Repo.execute([INSERT INTO heres (heres.name, heres.lnglat) VALUES ("ok", ST_GeomFromEWKT("SRID=4326;POINT(12 34)"))])
 end
 
 # ==================================
@@ -131,12 +119,13 @@ end
 
 function index(c::RoadController)
     q = [SELECT (roads.id, roads.name, as(ST_AsGeoJSON(roads.roadline), :roadline)) FROM roads]
-    rs = Repo.query(q, geometrytransforms)
+    rs = Repo.query(q)
     render(JSON, rs)
 end
 
 # ==================================
 pipeline(:api) do conn::Conn
+    setheader(conn.request.response, "Access-Control-Allow-Origin" => "*")
 end
 
 routes(:api) do
