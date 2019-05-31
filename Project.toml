@@ -6,6 +6,7 @@ version = "0.1.0"
 [deps]
 ArchGDAL = "c9ce4bd3-c3d5-55b8-8973-c0e20141b8c3"
 Bukdu = "3e78a19a-cc83-51d8-955b-515f39fd7955"
+GDAL = "add2ef01-049f-52c4-9ee2-e494f65e021a"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 LibGEOS = "a90b1aa1-3769-5649-ba7e-abc5a9d163eb"
 LibPQ = "194296ae-ab2e-5f79-8cd4-7183a0a5a0d1"
