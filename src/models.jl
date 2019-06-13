@@ -23,3 +23,21 @@ end
 
 Schema.model(Road, table_name="roads", primary_key="id")
 roads = from(Road, :roads)
+
+struct Province
+end
+
+Schema.model(Province, table_name="provinces", primary_key="id")
+provinces = from(Province, :provinces)
+
+struct City
+end
+
+Schema.model(City, table_name="cities", primary_key="id")
+cities = from(City, :cities)
+
+struct Country
+end
+
+Schema.model(Country, table_name="countries", primary_key="id")
+countries = from(Country, :countries)
