@@ -73,10 +73,10 @@ struct HereController <: ApplicationController
 end
 
 function index(c::HereController)
-    # q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
-    # hs = Repo.query(q)
-    q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres]
+    q = [SELECT (heres.id, heres.name, as(ST_AsGeoJSON(heres.lnglat), :lnglat)) FROM heres]
     hs = Repo.query(q)
+    # q = [SELECT (heres.id, heres.name, heres.lnglat) FROM heres]
+    # hs = Repo.query(q)
     render(JSON, hs)
     # render(JSON, to_features(hs, :lnglat))
     # render(JSON, to_featurecollection(hs, :lnglat))
@@ -124,6 +124,41 @@ function index(c::RoadController)
 end
 
 # ==================================
+struct ProvinceController <: ApplicationController
+    conn::Conn
+end
+
+function index(c::ProvinceController)
+    # q = [SELECT (provinces.id, provinces.name1, provinces.geom) FROM provinces]
+    q = [SELECT (provinces.id, provinces.name1, as(ST_AsGeoJSON(provinces.geom), :geom)) FROM provinces]
+    rs = Repo.query(q)
+    render(JSON, rs)
+end
+
+# ==================================
+struct CityController <: ApplicationController
+    conn::Conn
+end
+
+function index(c::CityController)
+    # q = [SELECT (cities.id, cities.name1, cities.geom) FROM cities]
+    q = [SELECT (cities.id, cities.name1, as(ST_AsGeoJSON(cities.geom), :geom)) FROM cities]
+    rs = Repo.query(q)
+    render(JSON, rs)
+end
+# ==================================
+struct CountryController <: ApplicationController
+    conn::Conn
+end
+
+function index(c::CountryController)
+    # q = [SELECT (countries.id, countries.name1, countries.geom) FROM countries]
+    q = [SELECT (countries.id, countries.name1, as(ST_AsGeoJSON(countries.geom), :geom)) FROM countries]
+    rs = Repo.query(q)
+    render(JSON, rs)
+end
+
+# ==================================
 pipeline(:api) do conn::Conn
     setheader(conn.request.response, "Access-Control-Allow-Origin" => "*")
 end
@@ -133,5 +168,8 @@ routes(:api) do
     resources("/roles", RoleController)
     resources("/heres", HereController)
     resources("/roads", RoadController)
+    resources("/provs", ProvinceController)
+    resources("/cities", CityController)
+    resources("/couns", CountryController)
     plug(Plug.Parsers, :json => Plug.ContentParsers.JSONDecoder, parsers=[:json])
 end

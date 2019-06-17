@@ -3,6 +3,7 @@ using GeoInterface
 using GeoInterface: AbstractGeometry
 using GeoJSON
 using LibGEOS
+using ArchGDAL
 
 GeometryTuple = NamedTuple
 
@@ -44,8 +45,34 @@ end
 #     featurecollection
 # end
 
-JSON2.write(io::IO, obj::T; kwargs...) where {T <: AbstractGeometry} = begin
-    JSON2.write(io, GeoJSON.geo2dict(obj); kwargs...)
+# JSON2.write(io::IO, obj::T; kwargs...) where {T <: AbstractGeometry} = begin
+#     geodict = GeoJSON.geo2dict(obj)
+#     JSON2.write(io, geodict; kwargs...)
+# end
+
+JSON2.write(io::IO, obj::T; kwargs...) where {T <: ArchGDAL.IGeometry} = begin
+    json = ArchGDAL.toJSON(obj)
+    Base.write(io, json)
+    return
+end
+
+function JSON2.write(io::IO, obj::AbstractString; kwargs...)
+    if startswith(obj, "{\"type\":") || startswith(obj, "{\"coordinates\":")
+        Base.write(io, obj)
+    else
+        Base.write(io, '"')
+        if JSON2.needescape(obj)
+            bytes = codeunits(obj)
+            for i = 1:length(bytes)
+                @inbounds b = JSON2.ESCAPECHARS[bytes[i] + 0x01]
+                Base.write(io, b)
+            end
+        else
+            Base.write(io, obj)
+        end
+        Base.write(io, '"')
+    end
+    return
 end
 
 function to_feature(data::GeometryTuple, geofield::Symbol) # where {T <: NamedTuple{names, types}} where {names, types}
