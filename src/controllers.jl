@@ -144,8 +144,10 @@ function index(c::CityController)
     # q = [SELECT (cities.id, cities.name1, cities.geom) FROM cities]
     q = [SELECT (cities.id, cities.name1, as(ST_AsGeoJSON(cities.geom), :geom)) FROM cities]
     rs = Repo.query(q)
-    render(JSON, rs)
+    fs = to_featurecollection(rs, :geom)
+    render(JSON, fs)
 end
+
 # ==================================
 struct CountryController <: ApplicationController
     conn::Conn
