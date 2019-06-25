@@ -2,7 +2,8 @@ using Octo.Adapters.PostgreSQL
 using GeoInterface: AbstractGeometry
 using LibPQ
 using LibGEOS
-using GeoWKB
+
+include("exts/LibPQEx.jl")
 
 Repo.debug_sql()
 conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
@@ -17,4 +18,4 @@ conn = Repo.connect(adapter=Octo.Adapters.PostgreSQL,
 #
 # register(conn, :geometry, AbstractGeometry, funcfrom, functo)
 
-GeoWKB.register(conn, :ArchGDAL)
+LibPQEx.register(conn, :ArchGDAL)
