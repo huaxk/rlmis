@@ -1,3 +1,5 @@
+module GeoJSONEx
+
 using JSON2
 using GeoInterface
 using GeoInterface: AbstractGeometry
@@ -89,3 +91,6 @@ end
 function to_featurecollection(data::Array{T}, geofield::Symbol) where {T <: NamedTuple}
     NamedTuple{(:type, :features)}(("FeatureCollection", to_features(data, geofield)))
 end
+
+
+end  # module GeoJSONEx

@@ -1,4 +1,4 @@
-# module OctoEx
+module OctoEx
 
 using Octo: Field, Predicate, SQLFunction
 using Octo.Adapters.PostgreSQL
@@ -47,10 +47,9 @@ Repo.query(stmt::Structured, transforms::Dict) = begin
     loader.query(sql, transforms)
 end
 
+end  # module OtcoEx
+
 @sql_functions(ST_AsText,
                ST_AsGeoJSON,
                ST_GeomFromEWKT,
                ST_GeomFromGeoJSON)
-
-
-# end  # module OtcoEx
