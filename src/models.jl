@@ -6,12 +6,6 @@ end
 Schema.model(User, table_name="users", primary_key="id")
 users = from(User, :users)
 
-struct Role
-end
-
-Schema.model(Role, table_name="roles", primary_key="id")
-roles = from(Role, :roles)
-
 struct Here
 end
 

@@ -113,17 +113,6 @@ function create(c::HereController)
 end
 
 # ==================================
-struct RoadController <: ApplicationController
-    conn::Conn
-end
-
-function index(c::RoadController)
-    q = [SELECT (roads.id, roads.name, as(ST_AsGeoJSON(roads.roadline), :roadline)) FROM roads]
-    rs = Repo.query(q)
-    render(JSON, rs)
-end
-
-# ==================================
 struct ProvinceController <: ApplicationController
     conn::Conn
 end
@@ -169,7 +158,6 @@ routes(:api) do
     resources("/users", UserController)
     resources("/roles", RoleController)
     resources("/heres", HereController)
-    resources("/roads", RoadController)
     resources("/provs", ProvinceController)
     resources("/cities", CityController)
     resources("/couns", CountryController)
